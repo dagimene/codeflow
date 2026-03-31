@@ -85,6 +85,22 @@ export const pattern: InterviewPattern = {
       title: 'Part 1: Requirements', 
       content: 'More detailed instructions...'
     }
+  ],
+  routes: [                                // Mock API routes (optional)
+    {
+      method: 'GET',
+      path: '/api/items',
+      handler: async (req) => {
+        return [{ id: 1, name: 'Item 1' }];
+      }
+    },
+    {
+      method: 'GET',
+      path: '/api/items/:id',
+      handler: async (req) => {
+        return { id: req.params.id, name: 'Item 1' };
+      }
+    }
   ]
 };
 ```
@@ -118,3 +134,22 @@ your-pattern/
 - **`type`**: Pattern type - defaults to 'react' if not specified
 - **`component`**: Reference to the main React component candidates will work on
 - **`readmes`**: Array of instruction tabs with markdown content for guidance
+- **`routes`**: Array of mock API routes (see below)
+
+### Mock API Routes
+
+Patterns can define `routes` to provide a mock API server. When a pattern with routes is loaded, Codeflow intercepts `fetch` calls to `/api/*` via a Service Worker and routes them to your handlers — no real backend needed.
+
+Each route has:
+
+- **`method`**: HTTP method — `'GET'`, `'POST'`, `'PUT'`, or `'DELETE'`
+- **`path`**: URL path starting with `/api/`. Supports named parameters with `:param` syntax (e.g. `/api/items/:id`)
+- **`handler`**: Async function that receives an `ApiRequest` and returns the response body
+
+The `ApiRequest` object contains:
+
+- **`params`**: Named path parameters (e.g. `{ id: '42' }` for `/api/items/:id`)
+- **`query`**: Query string parameters (e.g. `{ search: 'foo' }` for `/api/items?search=foo`)
+- **`body`**: Parsed JSON request body (for POST/PUT requests)
+
+Handlers run in the main thread with a simulated network delay. Applications use standard `fetch('/api/...')` calls as if the route handlers were running server-side.
