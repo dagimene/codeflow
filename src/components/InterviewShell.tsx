@@ -1,36 +1,30 @@
-import React, { useState, useEffect, useRef } from "react";
-import { InterviewPattern } from "../interviews/types";
+import React, {useEffect, useRef, useState} from "react";
+import {InterviewPattern} from "@/interviews/types";
+import {setupRoutes} from "@/server";
 import Instructions from "./Instructions";
 import CodingChallengeWrapper from "./CodingChallengeWrapper";
 import CodeReviewInterface from "./CodeReviewInterface";
 import "./InterviewShell.css";
-import { Button } from "./ui/button";
-import { ArrowLeftIcon } from "lucide-react";
-import { ThemeSwitcher } from "./theme-switcher";
-import { Badge } from "./ui/badge";
+import {Button} from "./ui/button";
+import {ThemeSwitcher} from "./theme-switcher";
+import {Badge} from "./ui/badge";
 import {
   Breadcrumb,
-  BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbLink,
-  BreadcrumbSeparator,
+  BreadcrumbList,
   BreadcrumbPage,
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarProvider,
   SidebarInset,
+  SidebarProvider,
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Separator } from "./ui/separator";
+import {Separator} from "./ui/separator";
 
 interface InterviewShellProps {
   pattern: InterviewPattern;
@@ -108,6 +102,15 @@ const SIDEBAR_OPEN_KEY_PREFIX = "sidebar-open-";
 const InterviewShell: React.FC<InterviewShellProps> = ({ pattern, onBack }) => {
   const [showInstructions, setShowInstructions] = useState(false);
   const [hasViewedInstructions, setHasViewedInstructions] = useState(false);
+  const [serverReady, setServerReady] = useState(!pattern.routes?.length);
+
+  // Initialize mock API server if the pattern declares routes
+  useEffect(() => {
+    if (pattern.routes?.length) {
+      setServerReady(false);
+      setupRoutes(pattern.routes).then(() => setServerReady(true));
+    }
+  }, [pattern]);
   const [sidebarWidth, setSidebarWidth] = useState(640); // 40rem in pixels
   const [isDragging, setIsDragging] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -252,7 +255,11 @@ const InterviewShell: React.FC<InterviewShellProps> = ({ pattern, onBack }) => {
               </div>
             </header>
             <main className="bg-white flex-1 overflow-y-auto">
-              {showInstructions && pattern.readmes ? (
+              {!serverReady ? (
+                <div className="flex items-center justify-center h-full text-muted-foreground">
+                  Starting server...
+                </div>
+              ) : showInstructions && pattern.readmes ? (
                 <Instructions
                   readmes={pattern.readmes}
                   onClose={() => setShowInstructions(false)}

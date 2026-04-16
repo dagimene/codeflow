@@ -88,7 +88,8 @@ codeflow/
 │   ├── components/       # UI components
 │   ├── interviews/      # Interview patterns & challenges. This directory should NOT contain interviews at the repository level.
 │   ├── hooks/          # Custom React hooks
-│   └── lib/            # Utility functions
+│   ├── lib/            # Utility functions
+│   └── server/         # Mock API server (SW-based request interception)
 ├── public/             # Static assets
 └── package.json        # Dependencies
 ```

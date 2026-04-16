@@ -9,6 +9,18 @@ export interface ImplementationDetails {
   testCases?: string;
 }
 
+export interface ApiRequest {
+  params: Record<string, string>;
+  query: Record<string, string>;
+  body: unknown;
+}
+
+export interface ApiRoute {
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  path: string;
+  handler: (req: ApiRequest) => Promise<unknown>;
+}
+
 export interface InterviewPattern {
   id: string;
   name: string;
@@ -21,6 +33,7 @@ export interface InterviewPattern {
   component?: React.ComponentType;  // Optional for code-review type
   type?: 'react' | 'coding-challenge' | 'code-review';  // Added code-review type
   implementationDetails?: ImplementationDetails;
+  routes?: ApiRoute[];
 }
 
 export interface InterviewConfig {
